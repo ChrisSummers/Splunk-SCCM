@@ -1,0 +1,31 @@
+<form>
+  <label>Computer Dashboard</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="dest_name">
+      <label>Computer Name</label>
+      <search>
+        <query>| inputlookup sccm_clientstatus | sort name</query>
+      </search>
+      <fieldForLabel>name</fieldForLabel>
+      <fieldForValue>name</fieldForValue>
+    </input>
+    <input type="text" token="field2"></input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <title>All Events</title>
+        <search>
+          <query>sourcetype="sccm:status_message" machinename=$dest_name$ | `sccm_lookup_status_message_desc` | table _time, severity, component, description</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">cell</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+</form>

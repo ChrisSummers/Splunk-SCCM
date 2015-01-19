@@ -1,0 +1,18 @@
+<dashboard>
+  <label>Package Changes</label>
+  <row>
+    <panel>
+      <table>
+        <title>changes</title>
+        <search>
+          <query>eventtype="sccm_change_audit" packageid!=null | `sccm_lookup_status_message_desc` | table _time, username, description</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="wrap">undefined</option>
+        <option name="rowNumbers">undefined</option>
+        <option name="drilldown">row</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>

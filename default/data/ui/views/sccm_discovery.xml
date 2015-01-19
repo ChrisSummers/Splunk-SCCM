@@ -1,0 +1,47 @@
+<dashboard>
+  <label>SCCM: Discovery</label>
+  <row>
+    <panel>
+      <table>
+        <title>Discovery Methods</title>
+        <search>
+          <query>sourcetype="sccm:status_message" (messageid="5202" OR messageid="5302")  | chart sum(string3) as total sparkline(sum(string3),1h) as trend by component</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">none</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <format type="sparkline" field="trend">
+          <option name="type">bar</option>
+          <option name="height">20px</option>
+          <option name="barColor">#2D89F0</option>
+          <option name="barWidth">5px</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Discovery Errors</title>
+        <search>
+          <query>sourcetype="sccm:status_message" (messageid="5202" OR messageid="5302") | chart sum(string4) as total sparkline(sum(string4),1h) as trend by component</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">cell</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <format type="sparkline" field="trend">
+          <option name="type">bar</option>
+          <option name="height">20px</option>
+          <option name="barColor">#F09609</option>
+          <option name="barWidth">5px</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+</dashboard>
