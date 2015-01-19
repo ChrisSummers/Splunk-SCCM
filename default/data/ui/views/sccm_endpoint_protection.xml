@@ -1,0 +1,142 @@
+<form>
+  <label>SCCM: Endpoint Protection</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="collectionid" searchWhenChanged="true">
+      <label>Collection</label>
+      <search>
+        <query>| `sccm_collections` | search collectionid != "SMS00001"  | sort collection</query>
+      </search>
+      <fieldForLabel>collection</fieldForLabel>
+      <fieldForValue>collectionid</fieldForValue>
+      <default>SMS00001</default>
+      <choice value="SMS00001">All Systems</choice>
+      <prefix>collectionid="</prefix>
+      <suffix>"</suffix>
+    </input>
+    <input type="time" token="timefilter">
+      <label></label>
+      <default>
+        <earliest>0</earliest>
+        <latest></latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <search>
+          <query>tag=malware vendor_product=SystemCenterEndpointProtection action_result=false | `sccm_lookup_collections` | search $collectionid$ | stats count(_raw)</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="linkView">search</option>
+        <option name="underLabel">Active Threats</option>
+      </single>
+      <single>
+        <search>
+          <query>tag=malware vendor_product=SystemCenterEndpointProtection action_result=false | `sccm_lookup_collections` | search $collectionid$ | dedup resourceid | stats count(_raw)</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="linkView">search</option>
+        <option name="underLabel">Vulnerable Hosts</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <search>
+          <query>tag=malware vendor_product=SystemCenterEndpointProtection | `sccm_lookup_collections` |  search $collectionid$ | stats count</query>
+          <earliest>$timefilter.earliest$</earliest>
+          <latest>$timefilter.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="linkView">search</option>
+        <option name="underLabel">Total Threats</option>
+      </single>
+      <single>
+        <search>
+          <query>tag=malware vendor_product=SystemCenterEndpointProtection | `sccm_lookup_collections` |  search $collectionid$ | dedup dest_name | stats count</query>
+          <earliest>$timefilter.earliest$</earliest>
+          <latest>$timefilter.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="linkView">search</option>
+        <option name="underLabel">Total Hosts</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Active Malware</title>
+        <search>
+          <query>tag=malware vendor_product=SystemCenterEndpointProtection  action_result=false | `sccm_lookup_collections` | search $collectionid$ | table "signature" | stats count by signature | rename signature as "Malware Name"</query>
+          <earliest>$timefilter.earliest$</earliest>
+          <latest>$timefilter.latest$</latest>
+        </search>
+        <option name="list.drilldown">full</option>
+        <option name="list.wrap">1</option>
+        <option name="maxLines">5</option>
+        <option name="raw.drilldown">full</option>
+        <option name="rowNumbers">false</option>
+        <option name="table.drilldown">all</option>
+        <option name="table.wrap">1</option>
+        <option name="type">list</option>
+        <option name="wrap">true</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="drilldown">cell</option>
+      </table>
+    </panel>
+    <panel>
+      <table>
+        <title>Vulnerable Hosts</title>
+        <search>
+          <query>tag=malware vendor_product=SystemCenterEndpointProtection  action_result=false | `sccm_lookup_collections` | search $collectionid$ | table dest_name | stats count by dest_name | rename dest_name as "Host Name"</query>
+          <earliest>$timefilter.earliest$</earliest>
+          <latest>$timefilter.latest$</latest>
+        </search>
+        <option name="wrap">undefined</option>
+        <option name="rowNumbers">undefined</option>
+        <option name="drilldown">row</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Signatures</title>
+        <search>
+          <query>| inputlookup sccm_clientstatus | `sccm_lookup_collections` |  search $collectionid$ | stats count(resourceid) by ep_antivirussignatureversion</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.axisY2.enabled">undefined</option>
+      </chart>
+    </panel>
+  </row>
+</form>

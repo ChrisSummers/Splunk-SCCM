@@ -1,0 +1,16 @@
+<nav color="#002050">
+  <view name="search" />
+  <collection label="ConfigMgr">
+	<collection label="Endpoint Protection">
+		<view name="sccm_endpoint_protection" />
+	</collection>
+	<collection label="Client Health">
+		<view name="sccm_client_health" />
+	</collection>
+	<collection label="Others">
+		<view source="unclassified" />
+	</collection>
+  </collection>
+  <view name="dashboards" />
+  <view name="reports" />
+</nav>

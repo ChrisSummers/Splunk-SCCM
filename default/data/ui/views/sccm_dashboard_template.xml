@@ -1,0 +1,24 @@
+<form>
+  <label>SCCM: Dashboard Template</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="collectionid" searchWhenChanged="true">
+      <label>Collection</label>
+      <search>
+        <query>| `sccm_collections` | search collectionid != "SMS00001"  | sort collection</query>
+      </search>
+      <fieldForLabel>collection</fieldForLabel>
+      <fieldForValue>collectionid</fieldForValue>
+      <default>SMS00001</default>
+      <choice value="SMS00001">All Systems</choice>
+      <prefix>collectionid="</prefix>
+      <suffix>"</suffix>
+    </input>
+    <input type="time" token="timefilter">
+      <label></label>
+      <default>
+        <earliest>0</earliest>
+        <latest></latest>
+      </default>
+    </input>
+  </fieldset>
+</form>
