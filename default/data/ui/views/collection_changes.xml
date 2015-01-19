@@ -1,11 +1,23 @@
-<dashboard>
+<form>
   <label>Collection Changes</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="collectionid" searchWhenChanged="true">
+      <label>Collection</label>
+      <search>
+        <query>eventtype="sccm_change_audit" collectionid=* | lookup sccm_collection_lookup collectionid OUTPUT collection | eval collection=COALESCE(collection,string3) | eval name=collection+" ("+collectionid+")" | dedup collectionid | table name,collectionid | sort name</query>
+      </search>
+      <fieldForLabel>name</fieldForLabel>
+      <fieldForValue>collectionid</fieldForValue>
+      <choice value="*">_ALL</choice>
+      <default>*</default>
+    </input>
+  </fieldset>
   <row>
     <panel>
       <table>
         <title>changes</title>
         <search>
-          <query>eventtype="sccm_change_audit" collectionid!=null | `sccm_lookup_status_message_desc` | table _time, username, description</query>
+          <query>eventtype="sccm_change_audit" collectionid!=null collectionid=$collectionid$ | `sccm_lookup_status_message_desc` | table _time, username, description</query>
           <earliest>0</earliest>
           <latest></latest>
         </search>
@@ -17,4 +29,4 @@
       </table>
     </panel>
   </row>
-</dashboard>
+</form>
