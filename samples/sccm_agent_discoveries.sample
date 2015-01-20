@@ -1,0 +1,11 @@
+2015-01-19 12:12:01.000 resourceid=#RESOURCEID# name=SPLUNK agentname=SMS_WINNT_SERVER_DISCOVERY_AGENT
+2015-01-19 17:50:01.000 resourceid=#RESOURCEID# name=SPLUNK agentname=SMS_AD_SYSTEM_DISCOVERY_AGENT
+2014-12-22 13:06:55.000 resourceid=#RESOURCEID# name=SPLUNK agentname=MP_ClientRegistration
+2015-01-19 13:23:50.000 resourceid=#RESOURCEID# name=SPLUNK agentname="Heartbeat Discovery"
+2015-01-15 09:40:01.000 resourceid=#RESOURCEID# name=WINCLIENT01 agentname=SMS_AD_SYSTEM_DISCOVERY_AGENT
+2014-12-22 15:47:31.000 resourceid=#RESOURCEID# name=WINCLIENT01 agentname=MP_ClientRegistration
+2014-12-22 15:50:52.000 resourceid=#RESOURCEID# name=WINCLIENT01 agentname="Heartbeat Discovery"
+2015-01-15 09:40:01.000 resourceid=#RESOURCEID# name=WINCLIENT02B agentname=SMS_AD_SYSTEM_DISCOVERY_AGENT
+2014-12-27 18:23:44.000 resourceid=#RESOURCEID# name=WINCLIENT02B agentname=MP_ClientRegistration
+2015-01-19 07:37:22.000 resourceid=#RESOURCEID# name=WINCLIENT02B agentname="Heartbeat Discovery"
+2015-01-15 09:40:01.000 resourceid=#RESOURCEID# name=SHDC agentname=SMS_AD_SYSTEM_DISCOVERY_AGENT
