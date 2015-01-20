@@ -1,16 +1,29 @@
 <nav color="#002050">
   <view name="search" />
-  <collection label="ConfigMgr">
-	<collection label="Endpoint Protection">
-		<view name="sccm_endpoint_protection" />
-	</collection>
-	<collection label="Client Health">
-		<view name="sccm_client_health" />
-	</collection>
-	<collection label="Others">
-		<view source="unclassified" />
-	</collection>
+    <collection label="Software">
+      <view name="installed_software_overview" />
+    <view name="software_installs" />
   </collection>
+  	<collection label="Client Info">
+		<view name="sccm_client_health" />
+        <view name="no_client" />
+      <view name="computer_dashboard" />
+	</collection>
+  <collection label="Endpoint Protection">
+    <view name="sccm_endpoint_protection" />
+  </collection>
+  <collection label="Change Reporting">
+    <view name="change_overview" />
+    <view name="changes_by_user" />
+    <view name="advertisement_changes" />
+    <view name="application_changes" />
+    <view name="collection_changes" />
+    <view name="package_changes" />
+  </collection>
+  <collection label="Other Reports">
+    <view source="unclassified" />
+  </collection>
+  
   <view name="dashboards" />
   <view name="reports" />
 </nav>

@@ -1,7 +1,7 @@
 <form>
-  <label>Application Changes</label>
-  <fieldset submitButton="false" autoRun="true">
-    <input type="time" token="timepicker" searchWhenChanged="true">
+  <label>Change Overview</label>
+  <fieldset submitButton="false">
+    <input type="time" token="timepicker">
       <label></label>
       <default>
         <earliest>@w0</earliest>
@@ -12,14 +12,12 @@
   <row>
     <panel>
       <chart>
-        <title>Application Changes by User</title>
+        <title>Changes by User</title>
         <search>
-          <query>eventtype="sccm_change_audit" (messageid=30152 OR messageid=30154 OR (messageid&gt;=30226 AND messageid&lt;=30228) OR messageid=40403 OR messageid=40404)| eval username=lower(username) | timechart span=1d count by username</query>
+          <query>eventtype="sccm_change_audit" | eval username=lower(username) | timechart span=1d count by username</query>
           <earliest>$timepicker.earliest$</earliest>
           <latest>$timepicker.latest$</latest>
         </search>
-        <option name="charting.chart">column</option>
-        <option name="charting.axisY2.enabled">false</option>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
         <option name="charting.axisTitleX.visibility">collapsed</option>
@@ -27,7 +25,9 @@
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.scale">linear</option>
         <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
         <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
         <option name="charting.chart.bubbleMaximumSize">50</option>
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
@@ -39,39 +39,21 @@
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
-        <option name="charting.chart.stackMode">stacked</option>
       </chart>
     </panel>
   </row>
   <row>
     <panel>
       <table>
-        <title>Application Deployments</title>
+        <title>All Changes</title>
         <search>
-          <query>eventtype="sccm_change_audit" messageid=30226 OR messageid=30228 | `sccm_lookup_status_message_desc` | table _time, recordid, username, description | rename _time as Time,  recordid as RecordID, username as User, description as Description | convert ctime(Time)</query>
-          <earliest>$timepicker.earliest$</earliest>
-          <latest>$timepicker.latest$</latest>
+          <query>eventtype="sccm_change_audit" | `sccm_lookup_status_message_desc` | table _time, recordid, messageid, username, description | rename _time as Time,  recordid as RecordID, messageid as MessageID, username as User, description as Description</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
         </search>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>
         <option name="drilldown">cell</option>
-        <option name="dataOverlayMode">none</option>
-        <option name="count">10</option>
-      </table>
-    </panel>
-  </row>
-  <row>
-    <panel>
-      <table>
-        <title>All Application Changes</title>
-        <search>
-          <query>eventtype="sccm_change_audit" (messageid=30152 OR messageid=30154 OR (messageid&gt;=30226 AND messageid&lt;=30228) OR messageid=40403 OR messageid=40404)| `sccm_lookup_status_message_desc` | table _time, username, description | rename _time as Time, username as User, description as Description | convert ctime(Time)</query>
-          <earliest>$timepicker.earliest$</earliest>
-          <latest>$timepicker.latest$</latest>
-        </search>
-        <option name="wrap">undefined</option>
-        <option name="rowNumbers">undefined</option>
-        <option name="drilldown">row</option>
         <option name="dataOverlayMode">none</option>
         <option name="count">10</option>
       </table>

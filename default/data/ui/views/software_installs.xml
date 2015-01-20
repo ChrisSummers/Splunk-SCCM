@@ -1,0 +1,44 @@
+<form>
+  <label>Installed Software Details</label>
+  <fieldset submitButton="false">
+    <input type="dropdown" token="productname" searchWhenChanged="true">
+      <label>Product</label>
+      <search>
+        <query>sourcetype=sccm:installed_software  | dedup product_name | table product_name | sort product_name</query>
+      </search>
+      <fieldForLabel>product_name</fieldForLabel>
+      <fieldForValue>product_name</fieldForValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <single>
+        <search>
+          <query>sourcetype=sccm:installed_software | dedup softwarepropertieshash0 | search active=1 | search $productname$ | stats count</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="linkView">search</option>
+        <option name="beforeLabel">Total Installations:</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Installed Software</title>
+        <search>
+          <query>sourcetype=sccm:installed_software | dedup softwarepropertieshash0 | search active=1 | search $productname$ | join type=outer resourceid [search sourcetype=sccm:resource] | table name, product_publisher, product_name, product_version, installation_date, family, category | rename name as ComputerName, product_publisher as Publisher, product_name as Product, product_version as Version, installation_date as InstallationDate, family as Family, category as Category | sort Publisher, Product | convert timeformat="%F" ctime(InstallationDate) | sort ComputerName</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">true</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="count">25</option>
+      </table>
+    </panel>
+  </row>
+</form>

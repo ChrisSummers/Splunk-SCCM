@@ -1,5 +1,5 @@
 <form>
-  <label>SCCM: Client health</label>
+  <label>Client Health Overview</label>
   <fieldset submitButton="false">
     <input type="dropdown" token="collectionid" searchWhenChanged="true">
       <label>Collection</label>
@@ -13,29 +13,64 @@
       <prefix>collectionid="</prefix>
       <suffix>"</suffix>
     </input>
-    <input type="time" token="timefilter">
-      <label></label>
-      <default>
-        <earliest>0</earliest>
-        <latest></latest>
-      </default>
-    </input>
   </fieldset>
   <row>
     <panel>
-      <chart>
-        <title>Count Clients</title>
+      <single>
         <search>
-          <query>| inputlookup sccm_clientstatus | `sccm_lookup_collections` |  search $collectionid$ | eval isclient=case(isclient==0,"No Client",isclient==1,"Client") | stats count(resourceid) by isclient</query>
-          <earliest>0</earliest>
-          <latest></latest>
+          <query>sourcetype="sccm:status_message" messageid=10800 | stats count</query>
+          <earliest>@w0</earliest>
+          <latest>now</latest>
         </search>
-        <option name="charting.chart">pie</option>
-        <option name="charting.axisY2.enabled">undefined</option>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="count">10</option>
+        <option name="linkView">search</option>
+        <option name="underLabel">Client Installs</option>
+      </single>
+      <single>
+        <search>
+          <query>sourcetype="sccm:status_message" messageid=10801 | stats count</query>
+                    <earliest>@w0</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="count">10</option>
+        <option name="underLabel">Client Uninstalls</option>
+      </single>
+      <single>
+        <search>
+          <query>sourcetype="sccm:status_message" messageid=10809 | stats count</query>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="count">10</option>
+        <option name="underLabel">Client Repairs</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Client Activity</title>
+        <search>
+          <query>sourcetype="sccm:resource" | timechart span=1h count</query>
+          <earliest>@w0</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.axisY2.enabled">false</option>
         <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
-        <option name="charting.axisTitleX.visibility">visible</option>
-        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
         <option name="charting.axisTitleY2.visibility">visible</option>
         <option name="charting.axisX.scale">linear</option>
         <option name="charting.axisY.scale">linear</option>
@@ -43,21 +78,23 @@
         <option name="charting.chart.bubbleMaximumSize">50</option>
         <option name="charting.chart.bubbleMinimumSize">10</option>
         <option name="charting.chart.bubbleSizeBy">area</option>
-        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.nullValueMode">zero</option>
         <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
         <option name="charting.chart.stackMode">default</option>
         <option name="charting.chart.style">shiny</option>
-        <option name="charting.drilldown">all</option>
+        <option name="charting.drilldown">none</option>
         <option name="charting.layout.splitSeries">0</option>
         <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
         <option name="charting.legend.placement">right</option>
       </chart>
     </panel>
+  </row>
+  <row>
     <panel>
       <chart>
         <title>Client Versions</title>
         <search>
-          <query>| inputlookup sccm_clientstatus | `sccm_lookup_collections` |  search $collectionid$ | stats count(resourceid) by clientversion</query>
+          <query>sourcetype="sccm:resource" | dedup resourceid | `sccm_lookup_collections` |  search $collectionid$ | stats count(resourceid) by clientversion</query>
           <earliest>0</earliest>
           <latest></latest>
         </search>
@@ -88,7 +125,7 @@
       <chart>
         <title>Systems by AD Site</title>
         <search>
-          <query>| inputlookup sccm_clientstatus | `sccm_lookup_collections` |  search $collectionid$ | stats count(resourceid) by adsitename | rename adsitename as "AD Site" | rename count(resourceid) as "Clients"</query>
+          <query>sourcetype="sccm:resource" | dedup resourceid | `sccm_lookup_collections` |  search $collectionid$ | stats count(resourceid) by adsitename | rename adsitename as "AD Site" | rename count(resourceid) as "Clients"</query>
           <earliest>0</earliest>
           <latest></latest>
         </search>
@@ -121,7 +158,7 @@
       <chart>
         <title>Client Activity</title>
         <search>
-          <query>| inputlookup sccm_clientstatus | `sccm_lookup_collections` |  search $collectionid$ | eval isactive=case(isactive==0,"Inactive",isactive==1,"Active") | stats count(resourceid) by isactive</query>
+          <query>sourcetype="sccm:resource" | dedup resourceid | `sccm_lookup_collections` |  search $collectionid$ | eval isactive=case(isactive==0,"Inactive",isactive==1,"Active") | stats count(resourceid) by isactive</query>
           <earliest>0</earliest>
           <latest></latest>
         </search>

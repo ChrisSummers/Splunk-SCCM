@@ -1,22 +1,75 @@
 <form>
-  <label>Computer Dashboard</label>
+  <label>System Details</label>
   <fieldset submitButton="false">
-    <input type="dropdown" token="dest_name">
+    <input type="dropdown" token="resourceid" searchWhenChanged="true">
       <label>Computer Name</label>
       <search>
-        <query>| inputlookup sccm_clientstatus | sort name</query>
+        <query>sourcetype=sccm:resource resource_type=system | dedup name | table resourceid, name | sort name</query>
+        <earliest>0</earliest>
+        <latest></latest>
       </search>
       <fieldForLabel>name</fieldForLabel>
-      <fieldForValue>name</fieldForValue>
+      <fieldForValue>resourceid</fieldForValue>
+      <change>
+        <set token="resourcename">$label$</set>
+      </change>
     </input>
-    <input type="text" token="field2"></input>
   </fieldset>
+  <row>
+    <panel>
+      <table>
+        <search>
+          <query>sourcetype=sccm:resource  resourceid=$resourceid$ | dedup resourceid | head 1 | table resourceid, sitecode, domain, clientversion, adlastlogontime, lastpolicyrequest, lasthardwarescan, lastactivetime, deviceos, ep_enabled, ep_antivirussignatureupdatedatetime | rename resourceid as ResourceID, sitecode as SiteCode, domain as Domain, clientversion as ClientVersion, adlastlogontime as ADLastLogonTime, lastpolicyrequest as LastPolicyRequestTime, lasthardwarescan as LastHardwareScanTime, lastactivetime as LastActiveTime, deviceos as OS, ep_enabled as "SCEP Enabled", ep_antivirussignatureupdatedatetime as "LastSignatureUpdateTime"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="wrap">undefined</option>
+        <option name="rowNumbers">undefined</option>
+        <option name="drilldown">row</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
   <row>
     <panel>
       <table>
         <title>All Events</title>
         <search>
-          <query>sourcetype="sccm:status_message" machinename=$dest_name$ | `sccm_lookup_status_message_desc` | table _time, severity, component, description</query>
+          <query>sourcetype="sccm:status_message" ($resourcename$ OR $resourceid$) | `sccm_lookup_status_message_desc` | table _time, recordid, severity, component, description | rename _time as Time, recordid as RecordID, severity as Severity, component as Component, description as Description | convert ctime(Time)</query>
+          <earliest>0</earliest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">none</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Installed Software</title>
+        <search>
+          <query>sourcetype=sccm:installed_software resourceid=$resourceid$ | dedup softwarepropertieshash0 | search active=1 | table product_publisher, product_name, product_version, installation_date, family, category | rename product_publisher, as Publisher, product_name as Name, product_version as Version, installation_date as InstallationDate, family as Family, category as Category | sort Publisher, Name | convert timeformat="%F" ctime(InstallationDate)</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="drilldown">cell</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Removed Software</title>
+        <search>
+          <query>sourcetype=sccm:installed_software resourceid=$resourceid$ | dedup softwarepropertieshash0 | search active=0 | table _time, product_publisher, product_name, product_version, installation_date, family, category | rename _time as Removed, product_publisher, as Publisher, product_name as Name, product_version as Version, installation_date as InstallationDate, family as Family, category as Category | sort Publisher, Name | convert timeformat="%F" ctime(InstallationDate), ctime(Removed)</query>
           <earliest>0</earliest>
           <latest></latest>
         </search>

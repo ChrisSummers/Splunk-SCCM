@@ -1,0 +1,37 @@
+<form>
+  <label>Changes By User</label>
+  <fieldset submitButton="false">
+    <input type="time" token="timepicker">
+      <label></label>
+      <default>
+        <earliest>@w0</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="username">
+      <label>User</label>
+      <search>
+        <query>eventtype="sccm_change_audit" | eval username = lower(username) | dedup username |  table username</query>
+      </search>
+      <fieldForLabel>username</fieldForLabel>
+      <fieldForValue>username</fieldForValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <title>All Changes</title>
+        <search>
+          <query>eventtype="sccm_change_audit"  |  eval username=lower(username) | search username=$username|s$ | `sccm_lookup_status_message_desc` | table _time, recordid, messageid, username, description | rename _time as Time,  recordid as RecordID, messageid as MessageID, username as User, description as Description</query>
+          <earliest>$timepicker.earliest$</earliest>
+          <latest>$timepicker.latest$</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+</form>

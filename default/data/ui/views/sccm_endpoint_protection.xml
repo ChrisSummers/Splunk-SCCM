@@ -1,5 +1,5 @@
 <form>
-  <label>SCCM: Endpoint Protection</label>
+  <label>Endpoint Protection Overview</label>
   <fieldset submitButton="false">
     <input type="dropdown" token="collectionid" searchWhenChanged="true">
       <label>Collection</label>
@@ -132,7 +132,7 @@
       <chart>
         <title>Signatures</title>
         <search>
-          <query>| inputlookup sccm_clientstatus | `sccm_lookup_collections` |  search $collectionid$ | stats count(resourceid) by ep_antivirussignatureversion</query>
+          <query>sourcetype=sccm:resource | dedup resourceid | `sccm_lookup_collections` |  search $collectionid$ | stats count(resourceid) by ep_antivirussignatureversion</query>
           <earliest>0</earliest>
           <latest></latest>
         </search>

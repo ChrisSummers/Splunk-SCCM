@@ -1,9 +1,9 @@
 <dashboard>
-  <label>SCCM: Discovery</label>
+  <label>Site Overview</label>
   <row>
     <panel>
       <table>
-        <title>Discovery Methods</title>
+        <title>Discovery agent events in last 24 hours</title>
         <search>
           <query>sourcetype="sccm:status_message" (messageid="5202" OR messageid="5302")  | chart sum(string3) as total sparkline(sum(string3),1h) as trend by component</query>
           <earliest>-24h@h</earliest>
@@ -24,7 +24,7 @@
     </panel>
     <panel>
       <table>
-        <title>Discovery Errors</title>
+        <title>Discovery errors events in last 24 hours</title>
         <search>
           <query>sourcetype="sccm:status_message" (messageid="5202" OR messageid="5302") | chart sum(string4) as total sparkline(sum(string4),1h) as trend by component</query>
           <earliest>-24h@h</earliest>
